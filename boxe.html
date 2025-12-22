@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥊 Boxe: Cara ou Coroa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .tela-inicial, .tela-jogo, .tela-final {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .regras {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .regras p {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .status-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            gap: 20px;
+        }
+
+        .lutador {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 15px;
+            border: 3px solid;
+        }
+
+        .lutador.jogador {
+            border-color: #00ff88;
+        }
+
+        .lutador.oponente {
+            border-color: #ff4444;
+        }
+
+        .lutador h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .vida-bar {
+            background: rgba(0, 0, 0, 0.5);
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .vida-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .vida-fill.jogador {
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+        }
+
+        .vida-fill.oponente {
+            background: linear-gradient(90deg, #ff4444, #cc0000);
+        }
+
+        .round-info {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #ffd700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .moeda-container {
+            margin: 30px 0;
+        }
+
+        .moeda {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            background: linear-gradient(145deg, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4);
+            border: 5px solid #ffed4e;
+        }
+
+        .moeda.girando {
+            animation: girar 1s ease-in-out;
+        }
+
+        @keyframes girar {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(1080deg); }
+        }
+
+        .botoes {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-cara {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-coroa {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .mensagem {
+            font-size: 1.5em;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .mensagem.acerto {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 2px solid #00ff88;
+        }
+
+        .mensagem.erro {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 2px solid #ff4444;
+        }
+
+        .mensagem.info {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            border: 2px solid #ffd700;
+        }
+
+        .vitoria {
+            color: #00ff88;
+            font-size: 3em;
+            margin: 20px 0;
+            animation: pulsar 1s infinite;
+        }
+
+        .derrota {
+            color: #ff4444;
+            font-size: 3em;
+            margin: 20px 0;
+        }
+
+        @keyframes pulsar {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .placar-final {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .placar-final p {
+            font-size: 1.3em;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .status-container {
+                flex-direction: column;
+            }
+
+            .botoes {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Tela Inicial -->
+        <div class="tela-inicial" id="telaInicial">
+            <h1>🥊 BOXE: CARA OU COROA 🥊</h1>
+            <div class="regras">
+                <p>🎮 <strong>REGRAS:</strong></p>
+                <p>• Acerte no CARA ou COROA para atacar!</p>
+                <p>• Cada acerto causa 1-3 de dano</p>
+                <p>• Se errar, pode levar contra-ataque!</p>
+                <p>• Primeiro a zerar a vida perde!</p>
+            </div>
+            <button class="btn-primary" onclick="iniciarJogo()">COMEÇAR LUTA</button>
+        </div>
+
+        <!-- Tela do Jogo -->
+        <div class="tela-jogo hidden" id="telaJogo">
+            <div class="round-info" id="roundInfo">ROUND 1</div>
+
+            <div class="status-container">
+                <div class="lutador jogador">
+                    <h3>🧑 VOCÊ</h3>
+                    <div class="vida-bar">
+                        <div class="vida-fill jogador" id="vidaJogador">
+                            <span id="vidaJogadorTexto">10 HP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lutador oponente">
+                    <h3>🤖 OPONENTE</h3>
+                    <div class="vida-bar">
+                        <div class="vida-fill oponente" id="vidaOponente">
+                            <span id="vidaOponenteTexto">10 HP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="moeda-container">
+                <div class="moeda" id="moeda">🪙</div>
+            </div>
+
+            <div id="mensagemJogo"></div>
+
+            <div class="botoes" id="botoesEscolha">
+                <button class="btn-cara" onclick="jogar('CARA')">CARA</button>
+                <button class="btn-coroa" onclick="jogar('COROA')">COROA</button>
+            </div>
+        </div>
+
+        <!-- Tela Final -->
+        <div class="tela-final hidden" id="telaFinal">
+            <div id="resultadoFinal"></div>
+            <div class="placar-final" id="placarFinal"></div>
+            <button class="btn-success" onclick="reiniciarJogo()">🔄 JOGAR NOVAMENTE</button>
+        </div>
+    </div>
+
+    <script>
+        let vidaJogador = 10;
+        let vidaOponente = 10;
+        let round = 1;
+
+        function iniciarJogo() {
+            document.getElementById('telaInicial').classList.add('hidden');
+            document.getElementById('telaJogo').classList.remove('hidden');
+            resetarJogo();
+        }
+
+        function resetarJogo() {
+            vidaJogador = 10;
+            vidaOponente = 10;
+            round = 1;
+            atualizarInterface();
+            document.getElementById('mensagemJogo').innerHTML = '';
+            document.getElementById('botoesEscolha').style.display = 'flex';
+        }
+
+        function atualizarInterface() {
+            document.getElementById('roundInfo').textContent = `🥊 ROUND ${round} 🥊`;
+
+            const percJogador = (vidaJogador / 10) * 100;
+            const percOponente = (vidaOponente / 10) * 100;
+
+            document.getElementById('vidaJogador').style.width = percJogador + '%';
+            document.getElementById('vidaOponente').style.width = percOponente + '%';
+
+            document.getElementById('vidaJogadorTexto').textContent = `${vidaJogador} HP`;
+            document.getElementById('vidaOponenteTexto').textContent = `${vidaOponente} HP`;
+        }
+
+        function jogar(escolha) {
+            document.getElementById('botoesEscolha').style.display = 'none';
+
+            const moeda = document.getElementById('moeda');
+            moeda.classList.add('girando');
+
+            setTimeout(() => {
+                moeda.classList.remove('girando');
+
+                const resultado = Math.random() < 0.5 ? 'CARA' : 'COROA';
+                moeda.textContent = resultado === 'CARA' ? '👤' : '👑';
+
+                setTimeout(() => {
+                    processarRodada(escolha, resultado);
+                }, 500);
+            }, 1000);
+        }
+
+        function processarRodada(escolha, resultado) {
+            const mensagemDiv = document.getElementById('mensagemJogo');
+
+            if (escolha === resultado) {
+                const dano = Math.floor(Math.random() * 3) + 1;
+                vidaOponente = Math.max(0, vidaOponente - dano);
+                mensagemDiv.innerHTML = `<div class="mensagem acerto">💥 ACERTOU! Dano: ${dano}</div>`;
+            } else {
+                mensagemDiv.innerHTML = `<div class="mensagem erro">😵 ERROU! Desviou!</div>`;
+
+                if (Math.random() < 0.4) {
+                    const dano = Math.floor(Math.random() * 2) + 1;
+                    vidaJogador = Math.max(0, vidaJogador - dano);
+                    setTimeout(() => {
+                        mensagemDiv.innerHTML += `<div class="mensagem erro">⚡ CONTRA-ATAQUE! Você levou ${dano} de dano!</div>`;
+                        atualizarInterface();
+                        verificarFimDeJogo();
+                    }, 1000);
+                    return;
+                }
+            }
+
+            atualizarInterface();
+            setTimeout(() => {
+                verificarFimDeJogo();
+            }, 1500);
+        }
+
+        function verificarFimDeJogo() {
+            if (vidaJogador <= 0 || vidaOponente <= 0) {
+                setTimeout(() => {
+                    mostrarTelaFinal();
+                }, 1000);
+            } else {
+                round++;
+                document.getElementById('moeda').textContent = '🪙';
+                document.getElementById('mensagemJogo').innerHTML = '';
+                document.getElementById('botoesEscolha').style.display = 'flex';
+                atualizarInterface();
+            }
+        }
+
+        function mostrarTelaFinal() {
+            document.getElementById('telaJogo').classList.add('hidden');
+            document.getElementById('telaFinal').classList.remove('hidden');
+
+            const resultadoDiv = document.getElementById('resultadoFinal');
+            const placarDiv = document.getElementById('placarFinal');
+
+            if (vidaJogador > 0) {
+                resultadoDiv.innerHTML = '<div class="vitoria">🏆 VITÓRIA! 🏆</div><p style="font-size: 1.3em;">Você nocauteou seu oponente!</p>';
+            } else {
+                resultadoDiv.innerHTML = '<div class="derrota">💀 DERROTA! 💀</div><p style="font-size: 1.3em;">Você foi nocauteado!</p>';
+            }
+
+            placarDiv.innerHTML = `
+                <p><strong>📊 PLACAR FINAL:</strong></p>
+                <p>Você: ${vidaJogador} HP</p>
+                <p>Oponente: ${vidaOponente} HP</p>
+                <p>Rounds: ${round}</p>
+            `;
+        }
+
+        function reiniciarJogo() {
+            document.getElementById('telaFinal').classList.add('hidden');
+            document.getElementById('telaJogo').classList.remove('hidden');
+            resetarJogo();
+        }
+    </script>
+</body>
+</html>
