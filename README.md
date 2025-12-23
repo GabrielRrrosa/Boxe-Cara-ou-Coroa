@@ -8,7 +8,7 @@ Este é um jogo single-page desenvolvido em HTML, CSS e JavaScript que simula um
 
 ## 🎮 Como Jogar
 
-1. Abra o link https://gabrielrrrosa.github.io/Boxe-Cara-ou-Coroa/ no seu navegador
+1. <a href="https://gabrielrrrosa.github.io/Boxe-Cara-ou-Coroa/" target="_blank">Abra este link</a> no seu navegador
 2. Clique em "COMEÇAR LUTA" para iniciar
 3. A cada rodada, escolha **CARA** ou **COROA**
 4. A moeda girará e mostrará o resultado
