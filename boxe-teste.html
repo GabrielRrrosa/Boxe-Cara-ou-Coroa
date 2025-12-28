@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥊 BOXE: CARA OU COROA 🥊</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+        }
+
+        .game-container {
+            width: 95%;
+            max-width: 1200px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .title {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.9);
+            color: #f39c12;
+        }
+
+        .round-display {
+            text-align: center;
+            font-size: 32px;
+            color: #e74c3c;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .arena {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .fighter {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .fighter-name {
+            font-size: 28px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .fighter.player .fighter-name {
+            color: #3498db;
+        }
+
+        .fighter.opponent .fighter-name {
+            color: #e74c3c;
+        }
+
+        .hp-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 15px;
+        }
+
+        .hp-bar-wrapper {
+            width: 100%;
+            height: 40px;
+            background: #2c3e50;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 3px solid #000;
+        }
+
+        .hp-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+            transition: width 0.5s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .hp-bar.low {
+            background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%);
+        }
+
+        .hp-bar.critical {
+            background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .sprite-container {
+            width: 280px;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sprite-container img {
+            max-width: 100%;
+            max-height: 100%;
+            image-rendering: pixelated;
+            object-fit: contain;
+        }
+
+        .sprite-container.shake {
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .sprite-container.attack {
+            animation: attack 0.3s;
+        }
+
+        @keyframes attack {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .vs-divider {
+            font-size: 64px;
+            font-weight: bold;
+            color: #f39c12;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9);
+        }
+
+        .controls {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .coin-display {
+            font-size: 120px;
+            margin: 30px 0;
+            animation: spin 0.6s ease-in-out;
+        }
+
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(720deg); }
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-cara {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-coroa {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            color: white;
+            font-size: 28px;
+            padding: 25px 60px;
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            margin-top: 30px;
+        }
+
+        .message {
+            text-align: center;
+            font-size: 28px;
+            margin: 30px 0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .message.success {
+            color: #2ecc71;
+        }
+
+        .message.error {
+            color: #e74c3c;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over.show {
+            display: flex;
+        }
+
+        .game-over-content {
+            text-align: center;
+            padding: 50px;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+        }
+
+        .game-over-title {
+            font-size: 72px;
+            margin-bottom: 30px;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.9);
+        }
+
+        .game-over-title.victory {
+            color: #f39c12;
+        }
+
+        .game-over-title.defeat {
+            color: #e74c3c;
+        }
+
+        .hidden {
+            display: none;
+        }
+        .sprite-container.flip img {
+    transform: scaleX(-1);
+}
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="title">🥊 BOXE: CARA OU COROA 🥊</h1>
+
+        <div id="startScreen">
+            <div style="text-align: center; margin: 50px 0; font-size: 20px; line-height: 2;">
+                <p>🎮 <strong>REGRAS:</strong></p>
+                <p>• Acerte no CARA ou COROA para atacar!</p>
+                <p>• Cada acerto causa 1-3 de dano</p>
+                <p>• Se errar, pode levar contra-ataque!</p>
+                <p>• Primeiro a zerar a vida perde!</p>
+            </div>
+            <div class="buttons">
+                <button class="btn-start" onclick="iniciarJogo()">COMEÇAR LUTA</button>
+            </div>
+        </div>
+
+        <div id="gameScreen" class="hidden">
+            <div class="round-display" id="roundDisplay">ROUND 1</div>
+
+            <div class="arena">
+                <div class="fighter player">
+                    <div class="fighter-name">🧑 VOCÊ</div>
+                    <div class="hp-container">
+                        <div class="hp-bar-wrapper">
+                            <div class="hp-bar" id="playerHpBar" style="width: 100%;">
+                                <span id="playerHp">10 HP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sprite-container" id="playerSprite">
+                        <img src="1.png" alt="Você">
+                    </div>
+                </div>
+
+                <div class="vs-divider">VS</div>
+
+                <div class="fighter opponent">
+                    <div class="fighter-name">🤖 OPONENTE</div>
+                    <div class="hp-container">
+                        <div class="hp-bar-wrapper">
+                            <div class="hp-bar" id="opponentHpBar" style="width: 100%;">
+                                <span id="opponentHp">10 HP</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sprite-container" id="opponentSprite">
+                        <img src="11.png" alt="Oponente">
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <div class="coin-display" id="coinDisplay">🪙</div>
+                <div class="message" id="messageDisplay">Escolha CARA ou COROA!</div>
+                <div class="buttons">
+                    <button class="btn-cara" id="btnCara" onclick="jogar('cara')">CARA</button>
+                    <button class="btn-coroa" id="btnCoroa" onclick="jogar('coroa')">COROA</button>
+                </div>
+                <div class="buttons">
+                    <button class="btn-restart" onclick="reiniciarJogo()">🔄 JOGAR NOVAMENTE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <div class="game-over-content">
+            <div class="game-over-title" id="gameOverTitle">VITÓRIA!</div>
+            <div style="font-size: 32px; margin: 30px 0;" id="gameOverMessage"></div>
+            <button class="btn-start" onclick="reiniciarJogo()">JOGAR NOVAMENTE</button>
+        </div>
+    </div>
+
+    <script>
+        // Estado do jogo
+        let playerHp = 10;
+        let opponentHp = 10;
+        let round = 1;
+        let gameActive = false;
+        let animating = false;
+
+        // Elementos
+        const startScreen = document.getElementById('startScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const playerHpBar = document.getElementById('playerHpBar');
+        const opponentHpBar = document.getElementById('opponentHpBar');
+        const playerHpText = document.getElementById('playerHp');
+        const opponentHpText = document.getElementById('opponentHp');
+        const roundDisplay = document.getElementById('roundDisplay');
+        const coinDisplay = document.getElementById('coinDisplay');
+        const messageDisplay = document.getElementById('messageDisplay');
+        const playerSprite = document.getElementById('playerSprite');
+        const opponentSprite = document.getElementById('opponentSprite');
+        const btnCara = document.getElementById('btnCara');
+        const btnCoroa = document.getElementById('btnCoroa');
+        const gameOver = document.getElementById('gameOver');
+        const gameOverTitle = document.getElementById('gameOverTitle');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+
+        // Sprites
+        const SPRITES = {
+            player: { idle: '1.png', attack: '2.png', hit: '3.png' },
+            opponent: { idle: '11.png', attack: '22.png', hit: '33.png' }
+        };
+
+        function iniciarJogo() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            gameActive = true;
+            resetGame();
+        }
+
+        function resetGame() {
+            playerHp = 10;
+            opponentHp = 10;
+            round = 1;
+            gameActive = true;
+            updateHP();
+            updateRound();
+            resetSprites();
+            messageDisplay.textContent = 'Escolha CARA ou COROA!';
+            messageDisplay.className = 'message';
+            coinDisplay.textContent = '🪙';
+            gameOver.classList.remove('show');
+            enableButtons();
+        }
+
+        function updateHP() {
+            const playerPercent = (playerHp / 10) * 100;
+            const opponentPercent = (opponentHp / 10) * 100;
+
+            playerHpBar.style.width = playerPercent + '%';
+            opponentHpBar.style.width = opponentPercent + '%';
+            playerHpText.textContent = playerHp + ' HP';
+            opponentHpText.textContent = opponentHp + ' HP';
+
+            // Cores baseadas na vida
+            updateHpColor(playerHpBar, playerPercent);
+            updateHpColor(opponentHpBar, opponentPercent);
+        }
+
+        function updateHpColor(bar, percent) {
+            bar.classList.remove('low', 'critical');
+            if (percent <= 30) bar.classList.add('critical');
+            else if (percent <= 50) bar.classList.add('low');
+        }
+
+        function updateRound() {
+            roundDisplay.textContent = `ROUND ${round}`;
+        }
+
+        function disableButtons() {
+            btnCara.disabled = true;
+            btnCoroa.disabled = true;
+        }
+
+        function enableButtons() {
+            btnCara.disabled = false;
+            btnCoroa.disabled = false;
+        }
+
+        function resetSprites() {
+            playerSprite.querySelector('img').src = SPRITES.player.idle;
+            opponentSprite.querySelector('img').src = SPRITES.opponent.idle;
+            playerSprite.classList.remove('shake', 'attack');
+            opponentSprite.classList.remove('shake', 'attack');
+        }
+
+        async function jogar(escolha) {
+            if (!gameActive || animating) return;
+
+            animating = true;
+            disableButtons();
+
+            // Girar moeda
+            coinDisplay.style.animation = 'none';
+            setTimeout(() => {
+                coinDisplay.style.animation = 'spin 0.6s ease-in-out';
+            }, 10);
+
+            // Resultado da moeda
+            const resultado = Math.random() < 0.5 ? 'cara' : 'coroa';
+
+            await sleep(600);
+
+            if (escolha === resultado) {
+                // Jogador acertou!
+                const dano = Math.floor(Math.random() * 3) + 1;
+                coinDisplay.textContent = resultado === 'cara' ? '👤' : '👑';
+                messageDisplay.textContent = `ACERTOU! 🎯 -${dano} HP no oponente!`;
+                messageDisplay.className = 'message success';
+
+                // Animação de ataque do jogador
+                playerSprite.querySelector('img').src = SPRITES.player.attack;
+                playerSprite.classList.add('attack');
+                await sleep(300);
+
+                // Oponente leva dano
+                opponentSprite.querySelector('img').src = SPRITES.opponent.hit;
+                opponentSprite.classList.add('shake');
+                opponentHp = Math.max(0, opponentHp - dano);
+                updateHP();
+                await sleep(500);
+
+            } else {
+                // Jogador errou!
+                const dano = Math.floor(Math.random() * 2) + 1;
+                coinDisplay.textContent = resultado === 'cara' ? '👤' : '👑';
+                messageDisplay.textContent = `ERROU! 💥 Contra-ataque! -${dano} HP!`;
+                messageDisplay.className = 'message error';
+
+                await sleep(500);
+
+                // Animação de ataque do oponente
+                opponentSprite.querySelector('img').src = SPRITES.opponent.attack;
+                opponentSprite.classList.add('attack');
+                await sleep(300);
+
+                // Jogador leva dano
+                playerSprite.querySelector('img').src = SPRITES.player.hit;
+                playerSprite.classList.add('shake');
+                playerHp = Math.max(0, playerHp - dano);
+                updateHP();
+                await sleep(500);
+            }
+
+            // Reset sprites
+            await sleep(300);
+            resetSprites();
+
+            // Verificar fim de jogo
+            if (playerHp <= 0 || opponentHp <= 0) {
+                endGame();
+            } else {
+                round++;
+                updateRound();
+                messageDisplay.textContent = 'Escolha CARA ou COROA!';
+                messageDisplay.className = 'message';
+                coinDisplay.textContent = '🪙';
+                enableButtons();
+                animating = false;
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+
+            setTimeout(() => {
+                if (opponentHp <= 0) {
+                    gameOverTitle.textContent = '🏆 VITÓRIA!';
+                    gameOverTitle.className = 'game-over-title victory';
+                    gameOverMessage.textContent = `Você derrotou o oponente no Round ${round}!`;
+                } else {
+                    gameOverTitle.textContent = '💀 DERROTA!';
+                    gameOverTitle.className = 'game-over-title defeat';
+                    gameOverMessage.textContent = `Você foi nocauteado no Round ${round}!`;
+                }
+                gameOver.classList.add('show');
+                animating = false;
+            }, 1000);
+        }
+
+        function reiniciarJogo() {
+            resetGame();
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        playerSprite.classList.add('flip');
+    </script>
+</body>
+</html>
